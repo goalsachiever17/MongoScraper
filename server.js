@@ -88,13 +88,13 @@ app.get("/saved", function(req, res) {
 
 app.get("/scrape", function(req, res) {
     //  add the body of the html with request
-    request("http://http://https://www.yahoo.com//", function(error, response, html) {
+    request("https://www.reddit.com/r/worldnews/", function(error, response, html) {
         
         var $ = cheerio.load(html);
         var count = 0;
 
         //  grab every h2 within an article tag
-        $("article section.cb-content").each(function(i, element) {
+        $(".title").each(function(i, element) {
 
             // Save an empty result object
             var result = {};
@@ -102,22 +102,20 @@ app.get("/scrape", function(req, res) {
 
             // Add the text and href of every link, and save them as properties of the
             // result object
-            result.title = $(this)
-                .children("div.grid_title")
+            result.link = $(element)
                 .children("a")
                 .attr("href");
-            result.link = $(this)
-                .children("div.grid_title")
+            result.title = $(element)         
                 .children("a")
-                .attr("href");
-            result.body = $(this)
-                .children("div.grid_summary")
-                .children("p")
                 .text();
+                console.log(result);
+                
+                
 
             // Using the Article model, create a new entry This effectively passes the
             // result object to the entry (and the title and link)
             var entry = new Article(result);
+            console.log(entry);
 
             // Now, save that entry to the db
             entry.save(function(err, doc) {
@@ -147,7 +145,7 @@ app.get("/articles", function(req, res) {
                 console.log(error // Or send the doc to the browser as a json object
                 );
             } else {
-                res.json(doc);
+                res.render();
             }
         });
 });
